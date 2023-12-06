@@ -5,7 +5,7 @@ DROP PROCEDURE IF EXISTS ReportUserData;
 CREATE PROCEDURE ReportUserData(username varchar(100))
 BEGIN
 	
-    DECLARE result, working TEXT;
+    DECLARE result TEXT;
     DECLARE calorieNeed, foodcal, exercisecal INT;
     
     SELECT CASE WHEN Gender = 'Female' THEN (655 + (9 * Weight/2) + (4 * HeightInches) - (5 * Age)) 
@@ -31,8 +31,8 @@ BEGIN
 	JOIN Food F ON F.FoodId = UFL.FoodId
 	JOIN Exercise E ON E.ExerciseId = UEL.ExerciseId
     WHERE U.Name = username
-    AND UFL.TimeConsumed BETWEEN current_timestamp() AND DATE_SUB(current_timestamp(), INTERVAL 1 DAY)
-    AND UEL.TimeExercised BETWEEN current_timestamp() AND DATE_SUB(current_timestamp(), INTERVAL 1 DAY);
+    AND UFL.TimeConsumed BETWEEN DATE_SUB(current_timestamp(), INTERVAL 1 DAY) AND current_timestamp()  
+    AND UEL.TimeExercised BETWEEN DATE_SUB(current_timestamp(), INTERVAL 1 DAY) AND current_timestamp();
     
     -- Fetch the result from the temporary table
     SELECT report FROM temp_report;

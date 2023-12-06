@@ -13,12 +13,20 @@ BEGIN
     -- get the id values for the names
     SELECT GoalId INTO usergoalid FROM Goal WHERE GoalType = goal;
     
-    SELECT UserID INTO myuserid FROM Users WHERE Name = username;
+    SELECT UserId INTO myuserid FROM Users WHERE Name = username;
     
     -- Perform the insert
     IF (myuserid is null) THEN
 		INSERT INTO Users (Name, Age, Weight, HeightInches, Gender, GoalId)  
 		VALUES (username, userage, userweight, height, usergender, usergoalid);
+	ELSE
+		UPDATE Users
+			SET Age = userage,
+				Weight = userweight,
+                HeightInches = height,
+                Gender = usergender,
+                GoalId = usergoalid
+		WHERE UserId = myuserid;
 	END IF;
     
 	  -- Check whether the insert was successful
