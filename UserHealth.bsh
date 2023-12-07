@@ -1,0 +1,60 @@
+#!/bin/bash
+
+## script name; UserHealth.bsh
+## wrapper script to execute mysql script with variables
+
+ARGS=7
+
+# Check if the procedure is specified
+
+sqlProcedure=$1
+uname=$2
+
+if [ "${sqlProcedure}" != "InsertUserFoodLog" ] && [ "${sqlProcedure}" != "AddUserInfo" ] && [ "${sqlProcedure}" != "DeleteUser" ] && [ "${sqlProcedure}" != "AnalyticalReport" ] && [ "${sqlProcedure}" != "InsertUserExerciseLog" ] && [ "${sqlProcedure}" != "ReportUserData" ]; then
+    echo "Invalid procedure specified"
+    exit 1
+fi
+
+if [ "${sqlProcedure}" == "AnalyticalReport" ]; then
+	echo "Usage: $(basename "$0") AnalyticalReport; CALL AnalyticalReport;"
+        /usr/local/mysql/bin/mysql -u root -p -A -e "USE NeoFitness; CALL ${sqlProcedure};"
+
+elif [ "${sqlProcedure}" == "DeleteUser" ]; then
+	echo "Usage: $(basename "$0") DeleteUser 'uname'; CALL DeleteUser(username);"
+        /usr/local/mysql/bin/mysql -u root -p -A -e "USE NeoFitness; SET @username='${uname}'; CALL ${sqlProcedure}(@username);"
+
+elif [ "${sqlProcedure}" == "ReportUserData" ]; then
+	echo "Usage: $(basename "$0") ReportUserData 'uname'; CALL ReportUserData(username);"
+        /usr/local/mysql/bin/mysql -u root -p -A -e "USE NeoFitness; SET @username='${uname}'; CALL ${sqlProcedure}(@username);"
+
+elif [ "${sqlProcedure}" == "InsertUserExerciseLog" ]; then
+        exercise=$3
+	echo "Usage: $(basename "$0") InsertUserExerciseLog 'uname' 'exercise'; CALL InsertUserExerciseLog(username, exercise);"
+        /usr/local/mysql/bin/mysql -u root -p -A -e "USE NeoFitness; SET @username='${uname}'; SET @Exercise='${exercise}';  CALL ${sqlProcedure}(@username, @Exercise);"
+
+elif [ "${sqlProcedure}" == "InsertUserFoodLog" ]; then
+        fname=$3
+        meal=$4
+	echo "Usage: $(basename "$0") InsertUserFoodLog 'uname' 'foodname' 'meal'; CALL InsertUserFoodLog(username, foodname, mealtype);"
+        /usr/local/mysql/bin/mysql -u root -p -A -e "USE NeoFitness; SET @username='${uname}'; SET @foodname='${fname}'; SET @mealtype='${meal}';  CALL ${sqlProcedure}(@username, @foodname, @mealtype);"
+  
+elif [ "${sqlProcedure}" == "AddUserInfo" ]; then
+	Age=$3
+	weight=$4
+	height=$5
+	gender=$6
+	goal=$7
+	echo "Usage: $(basename "$0") AddUserInfo 'uname' Age weight height 'gender' 'goal'; CALL AddUserInfo(username, Age, weight, height, gender, goal);"
+	/usr/local/mysql/bin/mysql -u root -p -A -e "USE NeoFitness; SET @username='${uname}'; SET @Age='${Age}'; SET @weight='${weight}'; SET @height='${height}'; SET @gender='${gender}'; SET @goal='${goal}';  CALL ${sqlProcedure}(@username, @Age, @weight, @height, @gender, @goal);" 
+
+else
+	echo "Invalid procedure"
+	exit 1
+
+fi
+
+echo "Script executed successfully"
+
+exit 0
+
+# end of script.
